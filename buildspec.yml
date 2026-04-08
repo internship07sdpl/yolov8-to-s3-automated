@@ -1,0 +1,17 @@
+version: 0.2
+
+phases:
+  install:
+    commands:
+      - echo Installing dependencies
+
+  build:
+    commands:
+      - echo Building Docker image
+      - docker build -t my-ml-app .
+      - echo Running training
+      - docker run my-ml-app
+
+artifacts:
+  files:
+    - '**/*'
