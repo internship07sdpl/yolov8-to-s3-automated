@@ -37,35 +37,31 @@ jobs:
           ROBOFLOW_API_KEY: ${{ secrets.ROBOFLOW_API_KEY }}
         run: |
           python train.py
-
-      - name: Debug - Show model path file
+      
+      - name: Validate model path
         run: |
-          echo "Contents of model_path.txt:"
-          cat model_path.txt || echo "model_path.txt not found"
-
-      - name: Commit and push trained model to GitHub
-        run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "actions@github.com"
-
           if [ ! -f model_path.txt ]; then
             echo "ERROR: model_path.txt not found"
             exit 1
           fi
 
+      - name: Copy model to repo folder
+        run: |
           MODEL_PATH=$(cat model_path.txt)
 
-          echo "Model path from Python: $MODEL_PATH"
-
           if [ ! -f "$MODEL_PATH" ]; then
-            echo "ERROR: best.pt not found at $MODEL_PATH"
+            echo "ERROR: best.pt not found"
             exit 1
           fi
 
           mkdir -p model
           cp "$MODEL_PATH" model/best.pt
 
+      - name: Commit and push trained model to GitHub
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "actions@github.com"
+
           git add model/best.pt
           git commit -m "Auto-update trained model" || echo "No changes"
-
           git push
