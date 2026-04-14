@@ -1,17 +1,12 @@
 version: 0.2
 
 phases:
-  install:
-    commands:
-      - echo Installing dependencies
-
   build:
     commands:
       - echo Building Docker image
       - docker build -t my-ml-app .
-      - echo Running training
-      - docker run my-ml-app
 
-artifacts:
-  files:
-    - '**/*'
+      - echo Running training pipeline
+      - docker run \
+        -e ROBOFLOW_API_KEY=$ROBOFLOW_API_KEY \
+        my-ml-app
