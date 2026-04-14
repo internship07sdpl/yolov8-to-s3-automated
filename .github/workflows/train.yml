@@ -1,30 +1,15 @@
-name: YOLOv8 Training Pipeline
+name: Trigger AWS Training Pipeline
 
 on:
   push:
     branches:
       - main
 
-permissions:
-  contents: write
-
 jobs:
-  train-model:
+  trigger-aws:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.9"
-
-      - name: Install dependencies
-        run: |
-          pip install -r requirements.txt
-
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v2
         with:
@@ -32,36 +17,6 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: Run training script
-        env:
-          ROBOFLOW_API_KEY: ${{ secrets.ROBOFLOW_API_KEY }}
+      - name: Trigger CodeBuild Project
         run: |
-          python train.py
-      
-      - name: Validate model path
-        run: |
-          if [ ! -f model_path.txt ]; then
-            echo "ERROR: model_path.txt not found"
-            exit 1
-          fi
-
-      - name: Copy model to repo folder
-        run: |
-          MODEL_PATH=$(cat model_path.txt)
-
-          if [ ! -f "$MODEL_PATH" ]; then
-            echo "ERROR: best.pt not found"
-            exit 1
-          fi
-
-          mkdir -p model
-          cp "$MODEL_PATH" model/best.pt
-
-      - name: Commit and push trained model to GitHub
-        run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "actions@github.com"
-
-          git add model/best.pt
-          git commit -m "Auto-update trained model" || echo "No changes"
-          git push
+          aws codebuild start-build --project-name YOUR_CODEBUILD_PROJECT_NAME
