@@ -10,3 +10,19 @@ phases:
     commands:
       - echo Running training...
       - python train.py
+
+  post_build:
+    commands:
+      - echo Pushing model to GitHub...
+
+      - git clone https://$GITHUB_TOKEN@github.com/internship07sdpl/yolov8-to-s3-automated.git repo
+
+      - mkdir -p repo/model
+      - cp /root/.pyenv/runs/detect/runs/train/weights/best.pt repo/model/best.pt
+
+      - cd repo
+      - git config user.name "aws-codebuild"
+      - git config user.email "codebuild@aws.com"
+      - git add model/best.pt
+      - git commit -m "Auto-update trained model" || echo "No changes"
+      - git push

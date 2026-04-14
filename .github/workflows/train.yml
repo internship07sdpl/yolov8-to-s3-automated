@@ -19,4 +19,4 @@ jobs:
 
       - name: Trigger CodeBuild Project
         run: |
-          aws codebuild start-build --project-name YOUR_CODEBUILD_PROJECT_NAME
+          aws codebuild start-build --project-name yolov8-training-project

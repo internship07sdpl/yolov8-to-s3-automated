@@ -73,7 +73,7 @@ try:
 
     s3.upload_file(
         best_model_path,
-        "yolov8-trained-model",
+        "best2.pt",
         "models/best.pt"
     )
 
