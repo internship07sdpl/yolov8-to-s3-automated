@@ -4,7 +4,8 @@ on:
   push:
     branches:
       - main
-
+    paths-ignore:
+      - 'model/**'
 jobs:
   trigger-aws:
     runs-on: ubuntu-latest
